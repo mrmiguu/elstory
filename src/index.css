@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: Quentin;
+  src: url('./fonts/Quentin.otf');
+}
+
+* {
+  overscroll-behavior: none;
+}
+
+:not(input) {
+  user-select: none;
+}

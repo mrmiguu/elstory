@@ -3,6 +3,7 @@ import { CSSProperties, PropsWithChildren, useEffect, useMemo, useState } from '
 import { Flipped, Flipper } from 'react-flip-toolkit'
 
 import { splitByPunctuation } from './appUtils'
+import { randomColorPair } from './bgColors'
 import { useRandomBibleVerse } from './bibleTranslations'
 import svg__1F54A from './icons/1F54A.svg'
 import { useMusic } from './music'
@@ -131,6 +132,8 @@ function App() {
     setCurrentPage(currentPage + 1)
   }
 
+  const [topRightBgColor, bottomLeftBgColor] = useMemo(() => randomColorPair(), [])
+
   return (
     <div className="absolute w-full h-full text-white bg-white">
       {elPages.slice(0, currentPage).map((el, i) => {
@@ -139,8 +142,11 @@ function App() {
         return (
           <StoryPage
             key={`${page}`}
-            className="absolute top-0 left-0 px-10 text-2xl text-justify bg-gradient-to-bl from-rose-500 to-rose-700"
-            style={{ zIndex: elPages.length - page }}
+            className="absolute top-0 left-0 px-10 text-2xl text-justify"
+            style={{
+              zIndex: elPages.length - page,
+              backgroundImage: `linear-gradient(to bottom left, ${topRightBgColor}, ${bottomLeftBgColor})`,
+            }}
             page={page}
             flip={currentPage > page}
             onClick={goToNextPage}

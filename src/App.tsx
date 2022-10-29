@@ -1,5 +1,5 @@
 import { Howl } from 'howler'
-import { CSSProperties, PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import { CSSProperties, Fragment, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { Flipped, Flipper } from 'react-flip-toolkit'
 
 import { splitByPunctuation } from './appUtils'
@@ -36,7 +36,7 @@ function AnimatedText({ children: text, onComplete }: AnimatedTextProps) {
         const letters = word.split('')
 
         return (
-          <>
+          <Fragment key={`${w}`}>
             {w > 0 && ' '}
             <div className="inline-block">
               {letters.map((letter, l) => {
@@ -44,7 +44,7 @@ function AnimatedText({ children: text, onComplete }: AnimatedTextProps) {
                   <div className={`inline-block ${!show && 'absolute right-0 top-0 opacity-0'}`}>{letter}</div>
                 )
 
-                return animating ? (
+                const animatedOrStaticLetter = animating ? (
                   <Flipped
                     flipId={`Animatedtext-${w}-${l}-salt-${uniqueTextHash}`}
                     stagger
@@ -55,21 +55,25 @@ function AnimatedText({ children: text, onComplete }: AnimatedTextProps) {
                 ) : (
                   elLetter
                 )
+
+                return <Fragment key={`${l}`}>{animatedOrStaticLetter}</Fragment>
               })}
             </div>
-          </>
+          </Fragment>
         )
       })}
     </div>
   )
 
-  return animating ? (
+  const animatedOrStaticText = animating ? (
     <Flipper flipKey={`show=${show};text=${text}`} spring="gentle" onComplete={() => setAnimating(false)}>
       {elText}
     </Flipper>
   ) : (
     elText
   )
+
+  return animatedOrStaticText
 }
 
 type StoryPageProps = PropsWithChildren<{
@@ -119,8 +123,10 @@ function App() {
       </div>
       <img className="w-24 -ml-3 pointer-events-none invert" src={svg__1F54A} alt="logo icon" />
     </div>,
-    ...partialVerses.map(partialVerse => (
-      <AnimatedText onComplete={() => setCurrentPageAnimating(false)}>{partialVerse}</AnimatedText>
+    ...partialVerses.map((partialVerse, i) => (
+      <AnimatedText key={`${i}`} onComplete={() => setCurrentPageAnimating(false)}>
+        {partialVerse}
+      </AnimatedText>
     )),
   ] as const
 

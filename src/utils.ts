@@ -7,6 +7,6 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const shuffle = <T = any>(arr: readonly T[]) => [...arr].sort(() => (random() < 0.5 ? -1 : 1))
 
-const randomPick = <T = any>(arr: readonly T[]) => arr[~~(random() * arr.length)]!
+const randomPick = <T = any>(arr: readonly T[]) => arr[~~(random() * arr.length)] as T
 
 export { log, warn, error, stringify, parse, min, max, abs, random, keys, values, entries, sleep, shuffle, randomPick }

@@ -129,7 +129,8 @@ function App() {
   const [currentPageAnimating, setCurrentPageAnimating] = useState(false)
   const [topRightBgColor, bottomLeftBgColor] = useMemo(() => randomColorPair(), [])
 
-  useMusic('JesusTime')
+  const randomSong = useMemo(() => randomPick(['JesusTime', 'JesusTime-slow', 'JesusTime-fast'] as const), [])
+  useMusic(randomSong)
 
   const { chapter, chapterIndex } = useRandomBibleVerse('en_bbe')
 
@@ -174,7 +175,8 @@ function App() {
     </StoryPage>
   )
 
-  const locked = currentPageIndex >= 0 && (currentPageAnimating || currentPageIndex >= elPages.length - 1)
+  const splashLocked = currentPageIndex <= -1
+  const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= elPages.length - 1)
 
   function goToNextPage() {
     if (locked) return
@@ -182,10 +184,22 @@ function App() {
     setCurrentPageIndex(currentPageIndex + 1)
   }
 
-  return (
-    <div className="absolute w-full h-full text-white bg-white">
-      {elSplashPage}
+  const elVerses = [...Array(splashLocked ? 1 : 1)].map((_, i) => (
+    <div key={`${i}`} className="relative w-full h-full" style={{ scrollSnapAlign: 'start' }}>
       {elPages.slice(0, currentPageIndex + 1)}
+    </div>
+  ))
+
+  return (
+    <div
+      className="absolute w-full h-full text-white bg-white"
+      style={{
+        overflowY: 'scroll',
+        scrollSnapType: 'y mandatory',
+      }}
+    >
+      {elSplashPage}
+      {elVerses}
     </div>
   )
 }

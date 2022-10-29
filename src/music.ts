@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import useAsync from 'react-use/lib/useAsync'
 import { GlobDefaultImport } from './types'
 
-type Song = 'JesusTime'
+type Song = 'JesusTime' | 'JesusTime-slow' | 'JesusTime-fast'
 
 const musicModules = import.meta.glob<GlobDefaultImport<string>>('./music/*.mp3')
 

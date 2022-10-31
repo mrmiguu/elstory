@@ -9,4 +9,27 @@ const shuffle = <T = any>(arr: readonly T[]) => [...arr].sort(() => (random() < 
 
 const randomPick = <T = any>(arr: readonly T[]) => arr[~~(random() * arr.length)] as T
 
-export { log, warn, error, stringify, parse, min, max, abs, random, keys, values, entries, sleep, shuffle, randomPick }
+const fetchJSON = async <T extends object>(url: string) => {
+  const resp = await fetch(url)
+  const json: T = await resp.json()
+  return json
+}
+
+export {
+  log,
+  warn,
+  error,
+  stringify,
+  parse,
+  min,
+  max,
+  abs,
+  random,
+  keys,
+  values,
+  entries,
+  sleep,
+  shuffle,
+  randomPick,
+  fetchJSON,
+}

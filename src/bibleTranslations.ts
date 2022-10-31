@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import useAsync from 'react-use/lib/useAsync'
+import { GlobDefaultImport } from './types'
 import { random } from './utils'
 
 type BibleTranslation = 'en_bbe' | 'en_kjv'
@@ -10,15 +11,10 @@ type BibleJSON = {
   chapters: string[][]
 }[]
 
-const bibleTranslationModules = import.meta.glob('./translations/*.json')
+const bibleTranslationModules = import.meta.glob<GlobDefaultImport<BibleJSON>>('./bible/*.json')
 
-const fetchBibleTranslation = async (translation: BibleTranslation) => {
-  // return (await bibleTranslationModules[`./translations/${translation}.json`]()).default
-
-  const resp = await fetch(`https://raw.githubusercontent.com/thiagobodruk/bible/master/json/${translation}.json`)
-  const json: BibleJSON = await resp.json()
-  return json
-}
+const fetchBibleTranslation = async (translation: BibleTranslation) =>
+  (await bibleTranslationModules[`./bible/${translation}.json`]!()).default
 
 function useBibleTranslation(translation: BibleTranslation) {
   const { value: bibleJSON } = useAsync(() => fetchBibleTranslation(translation), [translation])
@@ -41,4 +37,4 @@ function useRandomBibleVerse(translation: BibleTranslation) {
 }
 
 export type { BibleTranslation, BibleJSON }
-export { bibleTranslationModules, fetchBibleTranslation, useBibleTranslation, useRandomBibleVerse }
+export { fetchBibleTranslation, useBibleTranslation, useRandomBibleVerse }

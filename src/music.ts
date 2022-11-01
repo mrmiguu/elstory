@@ -1,8 +1,6 @@
 import { Howl } from 'howler'
 import { useEffect } from 'react'
 
-// const backgroundMusic = new Howl({ src: music__JesusTime, volume: 0.5, preload: true })
-
 import useAsync from 'react-use/lib/useAsync'
 import { GlobDefaultImport } from './types'
 

@@ -1,22 +1,38 @@
-import { useMemo, useState } from 'react'
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import AnimatedText from './AnimatedText'
+import { splitByPunctuation } from './appUtils'
 import { randomColorPair } from './bgColors'
+import { useRandomBibleVerse } from './bibleTranslations'
 import svg__1F54A from './icons/1F54A.svg'
 import VersePage from './VersePage'
 
 type VersePages = {
-  pages: string[]
   splash?: boolean
+  parentRef: RefObject<HTMLDivElement>
 }
 
-function VersePages({ pages, splash }: VersePages) {
+function VersePages({ splash, parentRef }: VersePages) {
+  const originalParentOverflowYRef = useRef<string | undefined>()
+  const { chapter, chapterIndex } = useRandomBibleVerse('en_bbe')
+
+  const subsetOfVerses = chapter?.slice(chapterIndex) ?? []
+  const versePages = subsetOfVerses.reduce<string[]>((list, verse) => [...list, ...splitByPunctuation(verse)], [])
+
   const [currentPageIndex, setCurrentPageIndex] = useState(splash ? -1 : 0)
   const [currentPageAnimating, setCurrentPageAnimating] = useState(false)
   const [topRightBgColor, bottomLeftBgColor] = useMemo(() => randomColorPair(), [])
 
   const splashLocked = currentPageIndex <= -1
-  const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= pages.length - 1)
+  const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= versePages.length - 1)
   const versePageCursor = locked ? 'cursor-wait' : 'cursor-pointer'
+
+  useEffect(() => {
+    const parent = parentRef.current
+    if (!splash || !parent) return
+
+    originalParentOverflowYRef.current = originalParentOverflowYRef.current ?? parent.style.overflowY
+    parent.style.overflowY = splashLocked ? 'hidden' : originalParentOverflowYRef.current
+  })
 
   function goToNextPage() {
     if (locked) return
@@ -27,7 +43,7 @@ function VersePages({ pages, splash }: VersePages) {
     <VersePage
       className={`absolute top-0 left-0 px-10 text-2xl text-justify ${versePageCursor}`}
       style={{
-        zIndex: pages.length,
+        zIndex: versePages.length,
         backgroundImage: `linear-gradient(to bottom left, ${topRightBgColor}, ${bottomLeftBgColor})`,
       }}
       pageIndex={-1}
@@ -45,12 +61,12 @@ function VersePages({ pages, splash }: VersePages) {
 
   const elVerses = (
     <div className="relative w-full h-full" style={{ scrollSnapAlign: 'start' }}>
-      {pages.slice(0, currentPageIndex + 1).map((versePart, pageIndex) => (
+      {versePages.slice(0, currentPageIndex + 1).map((versePart, pageIndex) => (
         <VersePage
           key={`${pageIndex}`}
           className={`absolute top-0 left-0 px-10 text-2xl text-justify ${versePageCursor}`}
           style={{
-            zIndex: pages.length - 1 - pageIndex,
+            zIndex: versePages.length - 1 - pageIndex,
             backgroundImage: `linear-gradient(to bottom left, ${topRightBgColor}, ${bottomLeftBgColor})`,
           }}
           pageIndex={pageIndex}

@@ -4,14 +4,13 @@ import { randomColorPair } from './bgColors'
 import svg__1F54A from './icons/1F54A.svg'
 import VersePage from './VersePage'
 
-let splashDone = false
-
 type VersePages = {
   pages: string[]
+  splash?: boolean
 }
 
-function VersePages({ pages }: VersePages) {
-  const [currentPageIndex, setCurrentPageIndex] = useState(splashDone ? 0 : -1) // starts at -1; singleton for touch-start
+function VersePages({ pages, splash }: VersePages) {
+  const [currentPageIndex, setCurrentPageIndex] = useState(splash ? -1 : 0)
   const [currentPageAnimating, setCurrentPageAnimating] = useState(false)
   const [topRightBgColor, bottomLeftBgColor] = useMemo(() => randomColorPair(), [])
 
@@ -22,10 +21,9 @@ function VersePages({ pages }: VersePages) {
   function goToNextPage() {
     if (locked) return
     setCurrentPageIndex(currentPageIndex + 1)
-    splashDone = true // implied due to currentPageIndex -1 -> 0 progression
   }
 
-  const elTemporarySplashPage = splashLocked && (
+  const elTemporarySplashPage = splash && (
     <VersePage
       className={`absolute top-0 left-0 px-10 text-2xl text-justify ${versePageCursor}`}
       style={{

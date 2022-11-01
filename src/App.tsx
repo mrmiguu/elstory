@@ -106,7 +106,7 @@ function App() {
         scrollSnapType: 'y mandatory',
       }}
     >
-      <VersePages pages={versePages} />
+      <VersePages pages={versePages} splash />
     </div>
   )
 }

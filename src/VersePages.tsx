@@ -13,9 +13,12 @@ type VersePages = {
 
 function VersePages({ splash, parentRef }: VersePages) {
   const originalParentOverflowYRef = useRef<string | undefined>()
-  const { chapter, chapterIndex } = useRandomBibleVerse('en_bbe')
+  const { book, chapterIndex, chapter, verseIndex } = useRandomBibleVerse('en_bbe')
+  const chapterNumber = chapterIndex + 1
+  const verseNumberStart = verseIndex + 1
+  const verseNumberEnd = chapter?.length
 
-  const subsetOfVerses = chapter?.slice(chapterIndex) ?? []
+  const subsetOfVerses = chapter?.slice(verseIndex) ?? []
   const versePages = subsetOfVerses.reduce<string[]>((list, verse) => [...list, ...splitByPunctuation(verse)], [])
 
   const [currentPageIndex, setCurrentPageIndex] = useState(splash ? -1 : 0)
@@ -80,6 +83,10 @@ function VersePages({ splash, parentRef }: VersePages) {
           >
             {versePart}
           </AnimatedText>
+
+          <div className="absolute bottom-0 left-0 p-10 text-xs opacity-75">
+            {book?.name} {chapterNumber}:{verseNumberStart}-{verseNumberEnd}
+          </div>
         </VersePage>
       ))}
     </div>

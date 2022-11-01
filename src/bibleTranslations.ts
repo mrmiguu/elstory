@@ -7,7 +7,7 @@ type BibleTranslation = 'en_bbe' | 'en_kjv'
 
 type BibleJSON = {
   abbrev: string
-  book: string
+  name: string
   chapters: string[][]
 }[]
 

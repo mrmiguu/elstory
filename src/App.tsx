@@ -35,6 +35,7 @@ function App() {
         className="absolute w-full h-full text-white bg-white"
         style={{
           overflowY: 'scroll',
+          overflowX: 'hidden',
           scrollSnapType: 'y mandatory',
         }}
       >

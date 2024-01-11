@@ -27,7 +27,7 @@ function VersePages({ splash, parentRef }: VersePages) {
 
   const splashLocked = currentPageIndex <= -1
   const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= versePages.length - 1)
-  const versePageCursor = locked ? 'cursor-wait' : 'cursor-pointer'
+  const versePageCursor = locked ? 'cursor-auto' : 'cursor-pointer'
 
   useEffect(() => {
     const parent = parentRef.current

@@ -1,10 +1,11 @@
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import AnimatedText from './AnimatedText'
+import VersePage from './VersePage'
 import { splitByPunctuation } from './appUtils'
-import { randomColorPair } from './bgColors'
+import { bgColorToBrightness } from './bgColors'
+import { bgColorPermutations } from './bgColors.permutations'
 import { useRandomBibleVerse } from './bibleTranslations'
 import svg__1F54A from './icons/1F54A.svg'
-import VersePage from './VersePage'
 
 type VersePages = {
   splash?: boolean
@@ -13,7 +14,8 @@ type VersePages = {
 
 function VersePages({ splash, parentRef }: VersePages) {
   const originalParentOverflowYRef = useRef<string | undefined>()
-  const { book, chapterIndex, chapter, verseIndex } = useRandomBibleVerse('en_bbe')
+  const { bookIndex, book, chapterIndex, chapter, verseIndex, bibleJSON } = useRandomBibleVerse('en_bbe')
+
   const chapterNumber = chapterIndex + 1
   const verseNumberStart = verseIndex + 1
   const verseNumberEnd = chapter?.length
@@ -23,7 +25,17 @@ function VersePages({ splash, parentRef }: VersePages) {
 
   const [currentPageIndex, setCurrentPageIndex] = useState(splash ? -1 : 0)
   const [currentPageAnimating, setCurrentPageAnimating] = useState(false)
-  const [topRightBgColor, bottomLeftBgColor] = useMemo(() => randomColorPair(), [])
+
+  const bookProgress = bibleJSON ? bookIndex / bibleJSON.length : undefined
+  const bgColorPermutationIndex = bookProgress === undefined ? -1 : ~~(bgColorPermutations.length * bookProgress)
+
+  const [bottomLeftBgColor = '#ffffff', topRightBgColor = '#ffffff'] =
+    bgColorPermutations[bgColorPermutationIndex] ?? []
+
+  const bottomLeftBrightness = bgColorToBrightness[bottomLeftBgColor]
+  const topRightBrightness = bgColorToBrightness[topRightBgColor]
+
+  const isLight = topRightBrightness === 'light' && bottomLeftBrightness === 'light'
 
   const splashLocked = currentPageIndex <= -1
   const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= versePages.length - 1)
@@ -44,7 +56,9 @@ function VersePages({ splash, parentRef }: VersePages) {
 
   const elTemporarySplashPage = splash && (
     <VersePage
-      className={`absolute top-0 left-0 px-10 text-2xl text-justify ${versePageCursor}`}
+      className={`absolute top-0 left-0 px-10 text-2xl text-justify ${
+        isLight ? 'text-black' : 'text-white'
+      } ${versePageCursor}`}
       style={{
         zIndex: versePages.length,
         backgroundImage: `linear-gradient(to bottom left, ${topRightBgColor}, ${bottomLeftBgColor})`,
@@ -57,13 +71,16 @@ function VersePages({ splash, parentRef }: VersePages) {
         <div className="font-[Quentin] text-7xl">
           <span className="font-bold">El</span>Story
         </div>
-        <img className="w-24 -ml-3 pointer-events-none invert" src={svg__1F54A} alt="logo icon" />
+        <img className={`w-24 -ml-3 pointer-events-none ${!isLight && 'invert'}`} src={svg__1F54A} alt="logo icon" />
       </div>
     </VersePage>
   )
 
   const elVerses = (
-    <div className="relative w-full h-full" style={{ scrollSnapAlign: 'start' }}>
+    <div
+      className={`relative w-full h-full ${isLight ? 'text-black' : 'text-white'}`}
+      style={{ scrollSnapAlign: 'start' }}
+    >
       {versePages.slice(0, currentPageIndex + 1).map((versePart, pageIndex) => (
         <VersePage
           key={`${pageIndex}`}

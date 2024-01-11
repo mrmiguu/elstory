@@ -1,25 +1,29 @@
-import { shuffle } from './utils'
+export const bgColors = [
+  '#ff0000',
+  '#ff8700',
+  '#ffd300',
+  '#deff0a',
+  '#a1ff0a',
+  '#0aff99',
+  '#0aefff',
+  '#147df5',
+  '#580aff',
+  '#be0aff',
+] as const
 
-const bgColors = ['#D03700', '#F29300', '#F9BE00', '#90C550', '#59B378', '#21a0a0', '#046865'] as const
+export type BgColor = (typeof bgColors)[number]
 
-type BgColor = (typeof bgColors)[number]
-
-type RandomColorPairCache = {
-  prevColorPair?: readonly [BgColor, BgColor]
+export const bgColorToBrightness: { [color: string]: 'light' | 'dark' } = {
+  '#ff0000': 'dark',
+  '#ff8700': 'dark',
+  '#ffd300': 'light',
+  '#deff0a': 'light',
+  '#a1ff0a': 'light',
+  '#0aff99': 'light',
+  '#0aefff': 'light',
+  '#147df5': 'dark',
+  '#580aff': 'dark',
+  '#be0aff': 'dark',
+  '#000000': 'dark',
+  '#ffffff': 'light',
 }
-
-const randomColorPair_cache: RandomColorPairCache = {}
-
-function randomColorPair() {
-  const [prevFirstColor, prevSecondColor] = randomColorPair_cache.prevColorPair ?? []
-  const shuffledBgColors = shuffle(bgColors)
-  let [firstColor, secondColor] = shuffledBgColors
-  if (firstColor === prevFirstColor && secondColor === prevSecondColor) {
-    firstColor = shuffledBgColors[1]
-    secondColor = shuffledBgColors[2]
-  }
-  randomColorPair_cache.prevColorPair = [firstColor!, secondColor!]
-  return [firstColor!, secondColor!] as const
-}
-
-export { bgColors, randomColorPair }

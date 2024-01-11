@@ -33,8 +33,8 @@ function useRandomBibleVerse(translation: BibleTranslation) {
   const verseIndex = useMemo(() => (chapter ? ~~(random() * chapter.length) : -1), [chapter])
   const verse = chapter?.[verseIndex]
 
-  return { bookIndex, book, chapterIndex, chapter, verseIndex, verse }
+  return { bookIndex, book, chapterIndex, chapter, verseIndex, verse, bibleJSON }
 }
 
-export type { BibleTranslation, BibleJSON }
 export { fetchBibleTranslation, useBibleTranslation, useRandomBibleVerse }
+export type { BibleJSON, BibleTranslation }

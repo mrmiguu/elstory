@@ -14,8 +14,6 @@ function App() {
   const [furthestVerseReached, setFurthestVerseReached] = useState(currentVerse)
   const nextFewVerses = furthestVerseReached + 3
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
   useEffect(() => {
     setFurthestVerseReached(max(currentVerse, furthestVerseReached))
   }, [currentVerse])

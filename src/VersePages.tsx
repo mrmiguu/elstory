@@ -1,3 +1,4 @@
+import { produce } from 'immer'
 import { RefObject, useEffect, useRef, useState } from 'react'
 import AnimatedText from './AnimatedText'
 import VersePage from './VersePage'
@@ -6,6 +7,13 @@ import { bgColorToBrightness } from './bgColors'
 import { bgColorPermutations } from './bgColors.permutations'
 import { useRandomBibleVerse } from './bibleTranslations'
 import svg__1F54A from './icons/1F54A.svg'
+import { parse, stringify } from './utils'
+
+type VersePagesRead = {
+  [bookIndex: number]: {
+    [chapterIndex: number]: [verseStartIndex: number, verseEndIndex: number]
+  }
+}
 
 type VersePages = {
   splash?: boolean
@@ -15,6 +23,16 @@ type VersePages = {
 function VersePages({ splash, parentRef }: VersePages) {
   const originalParentOverflowYRef = useRef<string | undefined>()
   const { bookIndex, book, chapterIndex, chapter, verseIndex, bibleJSON } = useRandomBibleVerse('en_bbe')
+
+  const [versePagesRead, setVersePagesRead] = useState<VersePagesRead>(() =>
+    parse(localStorage.getItem('versePagesRead') || '{}'),
+  )
+  useEffect(() => {
+    localStorage.setItem('versePagesRead', stringify(versePagesRead))
+  }, [versePagesRead])
+
+  const verseIndexStart = verseIndex
+  const verseIndexEnd = (chapter?.length ?? 0) - 1
 
   const chapterNumber = chapterIndex + 1
   const verseNumberStart = verseIndex + 1
@@ -38,8 +56,22 @@ function VersePages({ splash, parentRef }: VersePages) {
   const isLight = bottomLeftBrightness === 'light' && topRightBrightness === 'light'
 
   const splashLocked = currentPageIndex <= -1
-  const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= versePages.length - 1)
+  const isOnLastPage = versePages.length >= 1 && currentPageIndex >= versePages.length - 1
+  const locked = !splashLocked && (currentPageAnimating || isOnLastPage)
   const versePageCursor = locked ? 'cursor-auto' : 'cursor-pointer'
+
+  const isDoneReading = !currentPageAnimating && isOnLastPage
+
+  useEffect(() => {
+    if (!isDoneReading) return
+
+    setVersePagesRead(
+      produce(versePagesRead => {
+        versePagesRead[bookIndex] = versePagesRead[bookIndex] ?? {}
+        versePagesRead[bookIndex]![chapterIndex] = [verseIndexStart, verseIndexEnd]
+      }),
+    )
+  }, [isDoneReading])
 
   useEffect(() => {
     const parent = parentRef.current
@@ -53,6 +85,10 @@ function VersePages({ splash, parentRef }: VersePages) {
     if (locked) return
     setCurrentPageIndex(currentPageIndex + 1)
   }
+
+  const [alreadyReadStartIndex, alreadyReadEndIndex] = versePagesRead[bookIndex]?.[chapterIndex] ?? []
+
+  const alreadyRead = alreadyReadStartIndex !== undefined && alreadyReadStartIndex <= verseIndexStart
 
   const elTemporarySplashPage = splash && (
     <VersePage
@@ -103,9 +139,14 @@ function VersePages({ splash, parentRef }: VersePages) {
 
           <div className="absolute bottom-0 left-0 p-5 text-xs">
             <div
-              className={`px-2 py-1 rounded-full ${bottomLeftBrightness === 'light' ? 'bg-black/10' : 'bg-white/10'}`}
+              className={`flex gap-1 px-2 py-1 rounded-full ${
+                bottomLeftBrightness === 'light' ? 'bg-black/10' : 'bg-white/10'
+              }`}
             >
-              {book?.name} {chapterNumber}:{verseNumberStart}-{verseNumberEnd}
+              <span>
+                {book?.name} {chapterNumber}:{verseNumberStart}-{verseNumberEnd}
+              </span>
+              {alreadyRead && <span>⭐️</span>}
             </div>
           </div>
         </VersePage>

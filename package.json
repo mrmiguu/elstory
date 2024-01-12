@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "howler": "^2.2.3",
+    "immer": "^10.0.3",
     "logrocket": "^3.0.1",
     "qrcode": "^1.5.1",
     "react": "^18.0.0",

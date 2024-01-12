@@ -35,7 +35,7 @@ function VersePages({ splash, parentRef }: VersePages) {
   const bottomLeftBrightness = bgColorToBrightness[bottomLeftBgColor]
   const topRightBrightness = bgColorToBrightness[topRightBgColor]
 
-  const isLight = topRightBrightness === 'light' && bottomLeftBrightness === 'light'
+  const isLight = bottomLeftBrightness === 'light' && topRightBrightness === 'light'
 
   const splashLocked = currentPageIndex <= -1
   const locked = !splashLocked && (currentPageAnimating || currentPageIndex >= versePages.length - 1)
@@ -101,8 +101,12 @@ function VersePages({ splash, parentRef }: VersePages) {
             {versePart}
           </AnimatedText>
 
-          <div className="absolute bottom-0 left-0 p-10 text-xs opacity-75">
-            {book?.name} {chapterNumber}:{verseNumberStart}-{verseNumberEnd}
+          <div className="absolute bottom-0 left-0 p-5 text-xs">
+            <div
+              className={`px-2 py-1 rounded-full ${bottomLeftBrightness === 'light' ? 'bg-black/10' : 'bg-white/10'}`}
+            >
+              {book?.name} {chapterNumber}:{verseNumberStart}-{verseNumberEnd}
+            </div>
           </div>
         </VersePage>
       ))}

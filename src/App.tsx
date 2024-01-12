@@ -32,7 +32,7 @@ function App() {
   }
 
   const elOverlay = (
-    <div className="fixed top-0 left-0 z-[998] w-full h-full pointer-events-none p-10 flex justify-end items-end">
+    <div className="fixed top-0 left-0 z-[998] w-full h-full pointer-events-none p-5 flex justify-end items-end">
       <div className="text-2xl text-white opacity-50 cursor-pointer pointer-events-auto" onClick={toggleMute}>
         {muted ? '🔇' : '🔈'}
       </div>

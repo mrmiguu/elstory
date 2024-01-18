@@ -7,9 +7,10 @@
   src: url('./fonts/Quentin.otf');
 }
 
-* {
+/* TODO: remove if router history works and each verse page has a hard link */
+/* html {
   overscroll-behavior: none;
-}
+} */
 
 :not(input) {
   user-select: none;

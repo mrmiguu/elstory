@@ -105,7 +105,7 @@ function VersePages({ splash, parentRef }: VersePages) {
     >
       <div className="flex items-end">
         <div className="font-[Quentin] text-7xl">
-          <span className="font-bold">El</span>Story
+          <span className="font-bold">El</span>words
         </div>
         <img className={`w-24 -ml-3 pointer-events-none ${!isLight && 'invert'}`} src={svg__1F54A} alt="logo icon" />
       </div>
